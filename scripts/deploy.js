@@ -15,7 +15,7 @@ async function main() {
 
   // We get the contract to deploy
   const DAvatar = await hre.ethers.getContractFactory("DAvatar");
-  const dAvatar = await DAvatar.deploy(process.env.BASE_URI);
+  const dAvatar = await DAvatar.deploy();
 
   await dAvatar.deployed();
 
