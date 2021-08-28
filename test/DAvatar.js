@@ -18,11 +18,14 @@ describe("DAvatar", function () {
 
   it("Should mint new NFT token with correct metadata and assign to correct owner", async function () {
     const [defaultAccount, account1] = await ethers.getSigners();
+    const tokenId = Number(
+      await dAvatar.callStatic.mint(defaultAccount.address, "testMetadaCid")
+    );
 
     const mintTx = await dAvatar.mint(defaultAccount.address, "testMetadaCid");
     await mintTx.wait();
 
-    expect(await dAvatar.ownerOf(1)).to.equal(defaultAccount.address);
+    expect(await dAvatar.ownerOf(tokenId)).to.equal(defaultAccount.address);
 
     // @dev From should be zero when minting
     //
@@ -30,7 +33,7 @@ describe("DAvatar", function () {
     //
     await expect(dAvatar.mint(account1.address, "testMetadaCid"))
       .to.emit(dAvatar, "Transfer")
-      .withArgs(ethers.constants.AddressZero, account1.address, 2);
+      .withArgs(ethers.constants.AddressZero, account1.address, tokenId + 1);
 
     expect(await dAvatar.ownerOf(2)).to.equal(account1.address);
   });
