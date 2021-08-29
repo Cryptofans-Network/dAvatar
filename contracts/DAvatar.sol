@@ -33,7 +33,7 @@ contract DAvatar is ERC721Base {
      *
      * - the caller must have the `MINTER_ROLE`.
      */
-    function mint(address _to, string memory _metadataCid) public {
+    function mint(address _to, string memory _metadataCid) public returns(uint) {
         require(hasRole(MINTER_ROLE, _msgSender()), "ERC721Base: must have minter role to mint");
 
         _tokenIdTracker.increment();
@@ -41,5 +41,7 @@ contract DAvatar is ERC721Base {
         uint256 id = _tokenIdTracker.current();
         _safeMint(_to, id);
         _setTokenURI(id, _metadataCid);
+
+        return id;
     }
 }
