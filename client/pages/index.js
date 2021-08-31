@@ -1,9 +1,20 @@
 import Head from "next/head";
 import Image from "next/image";
+import { useThemeUI } from "theme-ui";
 import styles from "../styles/Home.module.css";
 import dAvatarLogo from "../public/dAvatar-logo.webp";
+import dAvatarLogoLight from "../public/dAvatar-logo-light.webp";
+import ToggleThemeMode, {THEME_MODES} from "../components/common/themeModeToggle/themeModeToggle";
 
 export default function Home() {
+  const { colorMode } = useThemeUI();
+
+  const Logo = (
+    colorMode === THEME_MODES.light ?
+    <Image src={dAvatarLogo} alt="dAvatar Logo" layout="intrinsic" /> :
+    <Image src={dAvatarLogoLight} alt="dAvatar Logo light version" layout="intrinsic" />
+    );
+
   return (
     <div className={styles.container}>
       <Head>
@@ -13,7 +24,7 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <Image src={dAvatarLogo} alt="dAvatar Logo" layout="intrinsic" />
+        {Logo}
         <h1 className={styles.title}>
           Welcome to dAvatar
         </h1>
@@ -21,6 +32,8 @@ export default function Home() {
         <p className={styles.description}>
           One avatar to rule them all
         </p>
+
+        <ToggleThemeMode />
       </main>
 
       <footer className={styles.footer}>
