@@ -5,9 +5,9 @@ describe("Minter", function () {
   let Minter;
   let minter;
 
-  // Current order of it assumptions matters, don't change it
-  // without changing this before hook to before each.
-  // This would require slight changes in it blocks too.
+  // Current order of `it` assumptions matters, don't change it
+  // without changing this `before` hook to `beforeEach`.
+  // This would require slight changes in `it` blocks too.
   before(async () => {
     const DAvatar = await ethers.getContractFactory("DAvatar");
     const dAvatar = await DAvatar.deploy("dAvatar", "dA", "ipfs://");
@@ -58,7 +58,7 @@ describe("Minter", function () {
       .withArgs(owner.address, fee, "2");
   });
 
-  it("Should throw an error if withdraw is not called by the contract owner", async function () {
+  it("Should throw an error if withdraw is called by the account that doesn't have a MINTER_ADMIN_ROLE role", async function () {
     const accounts = await ethers.getSigners();
 
     await expect(
@@ -66,6 +66,43 @@ describe("Minter", function () {
         from: accounts[1].address,
       })
     ).to.be.reverted;
+  });
+
+  it("Should throw an error when trying to revoke MINTER_ADMIN_ROLE for contract owner", async function () {
+    const [owner, accountOne] = await ethers.getSigners();
+    const MINTER_ADMIN_ROLE = await minter.MINTER_ADMIN_ROLE();
+
+    await minter.grantRole(MINTER_ADMIN_ROLE, accountOne.address);
+    expect(await minter.hasRole(MINTER_ADMIN_ROLE, owner.address)).to.be.true;
+    expect(await minter.hasRole(MINTER_ADMIN_ROLE, accountOne.address)).to.be.true;
+    expect(await minter.getRoleMemberCount(MINTER_ADMIN_ROLE)).to.equal(2);
+
+    await expect(
+      minter.revokeRole(MINTER_ADMIN_ROLE, owner.address)
+    ).to.be.reverted;
+  });
+
+  it("Should throw an error when trying to renounce MINTER_ADMIN_ROLE for contract owner", async function () {
+    const [owner] = await ethers.getSigners();
+    const MINTER_ADMIN_ROLE = await minter.MINTER_ADMIN_ROLE();
+
+    await expect(
+      minter.renounceRole(MINTER_ADMIN_ROLE, owner.address)
+    ).to.be.reverted;
+    expect(await minter.hasRole(MINTER_ADMIN_ROLE, owner.address)).to.be.true;
+  });
+
+  it("Accounts with MINTER_ADMIN_ROLE should be able to assign the same role to other accounts", async function () {
+    const [owner, minterAdmin, newMinterAdmin] = await ethers.getSigners();
+    const MINTER_ADMIN_ROLE = await minter.MINTER_ADMIN_ROLE();
+
+    expect(await minter.getRoleMemberCount(MINTER_ADMIN_ROLE)).to.equal(2);
+    expect(await minter.hasRole(MINTER_ADMIN_ROLE, minterAdmin.address)).to.be.true;
+
+    await minter.connect(minterAdmin).grantRole(MINTER_ADMIN_ROLE, newMinterAdmin.address);
+
+    expect(await minter.getRoleMemberCount(MINTER_ADMIN_ROLE)).to.equal(3);
+    expect(await minter.hasRole(MINTER_ADMIN_ROLE, newMinterAdmin.address)).to.be.true;
   });
 
   it("Should withdraw entire contract balance if no amount is specified", async function () {
