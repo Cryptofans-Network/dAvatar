@@ -2,6 +2,7 @@ import Head from "next/head";
 import Image from "next/image";
 import { useThemeUI } from "theme-ui";
 import styles from "../styles/Home.module.css";
+import mainLayout from "../layouts/mainLayout";
 import dAvatarLogo from "../public/dAvatar-logo.webp";
 import dAvatarLogoLight from "../public/dAvatar-logo-light.webp";
 import ToggleThemeMode, {THEME_MODES} from "../components/common/themeModeToggle/themeModeToggle";
@@ -42,3 +43,5 @@ export default function Home() {
     </div>
   )
 }
+
+Home.getLayout = mainLayout;
