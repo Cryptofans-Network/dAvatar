@@ -1,15 +1,18 @@
-import { ThemeProvider } from "theme-ui";
-import { theme } from "../styles/theme";
-import "../styles/globals.scss";
+import Script from "next/script";
+import "../styles/main.scss";
+import { THEME_SCRIPT, useThemeSetup } from "../lib/theme";
 
 function MyApp({ Component, pageProps }) {
-
+  useThemeSetup();
   const getLayout = Component.getLayout || ((page) => page);
 
   return (
-    <ThemeProvider theme={theme}>
+    <>
+      <Script id="theme-script" strategy="beforeInteractive">
+        {THEME_SCRIPT}
+      </Script>
       {getLayout(<Component {...pageProps} />)}
-    </ThemeProvider>
+    </>
   )
 }
 

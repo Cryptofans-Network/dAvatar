@@ -1,0 +1,26 @@
+.hero {
+  max-width: 960px;
+  margin: 100px auto;
+  text-align: center;
+}
+
+.learnMore {
+  margin: 50px 0 5px;
+}
+
+.arrow {
+  animation: float-vertical 4s ease-in-out infinite;
+}
+
+@keyframes float-vertical {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(10px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}

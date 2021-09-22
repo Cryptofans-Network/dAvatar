@@ -1,4 +1,20 @@
 :root {
-  --primary-dark: #081f37;
-  --primary-light: #E0E0E0;
+  --black: #000;
+  --eggshell: #f4f4f4;
+  --white: #fff;
+  --dark-blue: #081f37;
+}
+
+@mixin dark-theme-variables {
+  --bg-color: #151618;
+  --bg-color-negative: #242424;
+  --headline-color: #fff;
+  --text-color: #f4f4f4;
+}
+
+@mixin light-theme-variables {
+  --bg-color: #ffffff;
+  --bg-color-negative: #f4f4f4;
+  --headline-color: var(--dark-blue);
+  --text-color: #1e1f22;
 }
