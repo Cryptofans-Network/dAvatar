@@ -1,6 +1,6 @@
 import { ThemeProvider } from "theme-ui";
 import { theme } from "../styles/theme";
-import "../styles/globals.css";
+import "../styles/globals.scss";
 
 function MyApp({ Component, pageProps }) {
 
