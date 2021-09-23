@@ -30,3 +30,12 @@ a {
 button {
   padding: 10px 20px;
 }
+
+:root {
+  .themeToggle {
+    background: var(--text-color);
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+  }
+}
