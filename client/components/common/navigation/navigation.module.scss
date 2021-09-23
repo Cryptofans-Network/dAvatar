@@ -15,3 +15,26 @@
   grid-column-gap: 20px;
   align-items: center;
 }
+
+.menu {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  grid-column-gap: 20px;
+  align-items: center;
+}
+
+.profile {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  align-items: center;
+  background-color: var(--text-color);
+  cursor: pointer;
+}
+
+.address {
+  margin: 0;
+  color: var(--bg-color);
+  padding: 0 20px;
+  font-size: 14px;
+  font-weight: bold;
+}

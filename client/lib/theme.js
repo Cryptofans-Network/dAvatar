@@ -77,34 +77,14 @@ export const THEME_SCRIPT = `
   })();`;
 
 export function ThemeModeToggle(props) {
-  const { toggleDarkLightTheme, theme } = useThemeStore();
+  const { toggleDarkLightTheme } = useThemeStore();
 
-  const buttonStyles = {
-    background: theme == THEME.DARK ? "linear-gradient(#39598a, #79d7ed)" : "linear-gradient(#091236, #1e215d)",
-    border: `2px solid ${theme == THEME.DARK ? "#fff" : "#6b8096"}`,
-    borderRadius: "30px",
-    cursor: "pointer",
-    display: "flex",
-    fontSize: "0.5rem",
-    justifyContent: "space-between",
-    overflow: "hidden",
-    padding: "0.5rem",
-    position: "relative",
-    width: "3rem",
-    height: "1.5rem",
-  }
 
   return (
-    <button
+    <div
       {...props}
-      style={buttonStyles}
-      onClick={() => toggleDarkLightTheme()}
-    >
-      {
-        theme == THEME.LIGHT ?
-          <Image src={MoonIcon} alt="Moon icon" /> :
-          <Image src={SunIcon} alt="Sun icon"  />
-      }
-    </button>
+      className="themeToggle"
+      onClick={toggleDarkLightTheme}
+    />
   );
 }
