@@ -1,0 +1,18 @@
+/* common used breakpoints */
+$breakpoints: (
+        big-screen: 1920px,
+        medium-screen: 1200px,
+        small-screen: 1024px,
+        smallest-screen: 960px,
+        tablet: 768px,
+        mobile-landscape: 667px,
+        big-mobile: 480px,
+        medium-mobile: 375px,
+        small-mobile: 320px,
+);
+
+@mixin breakpoint($media) {
+  @media only screen and (max-width: map-get($breakpoints, $media)) {
+    @content;
+  }
+}

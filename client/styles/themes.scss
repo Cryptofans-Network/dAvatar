@@ -1,0 +1,54 @@
+@import "./variables.scss";
+
+// Fallback to system theme if no body is setup
+:root {
+  @include light-theme-variables;
+
+  @media (prefers-color-scheme: dark) {
+    @include dark-theme-variables;
+  }
+}
+
+.theme-dark {
+  @include dark-theme-variables;
+}
+
+.theme-light {
+  @include light-theme-variables;
+}
+
+.theme-system {
+  @include light-theme-variables;
+
+  @media (prefers-color-scheme: dark) {
+    @include dark-theme-variables;
+  }
+}
+
+// Experiment. Seems to generate too much code
+@mixin themed($var, $dark, $light) {
+  // Fallback to system theme if no body is setup
+  :root {
+    #{$var}: $light;
+
+    @media (prefers-color-scheme: dark) {
+      #{$var}: $dark;
+    }
+  }
+
+  .theme-dark {
+    #{$var}: $dark;
+  }
+
+  .theme-light {
+    #{$var}: $light;
+  }
+
+  .theme-system {
+    #{$var}: $light;
+
+    @media (prefers-color-scheme: dark) {
+      #{$var}: $dark;
+    }
+  }
+}

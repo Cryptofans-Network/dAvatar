@@ -1,12 +1,21 @@
-import { ThemeProvider } from "theme-ui";
-import { theme } from "../styles/theme";
-import "../styles/globals.css";
+import Script from "next/script";
+import { DAppProvider } from "@usedapp/core";
+import "../styles/main.scss";
+import { THEME_SCRIPT, useThemeSetup } from "../lib/theme";
 
 function MyApp({ Component, pageProps }) {
+  useThemeSetup();
+  const getLayout = Component.getLayout || ((page) => page);
+
   return (
-    <ThemeProvider theme={theme}>
-      <Component {...pageProps} />
-    </ThemeProvider>
+    <>
+      <Script id="theme-script" strategy="beforeInteractive">
+        {THEME_SCRIPT}
+      </Script>
+      <DAppProvider config={null}>
+        {getLayout(<Component {...pageProps} />)}
+      </DAppProvider>
+    </>
   )
 }
 
