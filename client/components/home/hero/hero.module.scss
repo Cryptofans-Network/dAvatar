@@ -4,6 +4,14 @@
   text-align: center;
 }
 
+.address {
+  background-color: var(--text-color);
+  color: var(--bg-color);
+  padding: 3px 5px;
+  margin-top: 5px;
+  display: inline-block;
+}
+
 .learnMore {
   margin: 50px 0 5px;
 }

@@ -1,8 +1,11 @@
 import styles from "./navigation.module.scss";
+import { useEthers } from "@usedapp/core";
 import { ThemeModeToggle } from "../../../lib/theme";
 import ThemedImage from "../../../lib/themedImage";
 
 const Navigation = () => {
+  const { activateBrowserWallet } = useEthers();
+
   return (
     <div className={styles.nav}>
       <ThemedImage
@@ -12,7 +15,7 @@ const Navigation = () => {
         alt="dAvatar Logo"
       />
       <div className={styles.controls}>
-        <button>Connect</button>
+        <button onClick={activateBrowserWallet}>Connect</button>
         <ThemeModeToggle />
       </div>
     </div>
