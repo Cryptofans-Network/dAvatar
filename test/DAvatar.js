@@ -43,6 +43,6 @@ describe("DAvatar", function () {
 
     await expect(
       dAvatar.connect(account1).mint(defaultAccount.address, "testMetadaCid")
-    ).to.be.revertedWith("ERC721Base: must have minter role to mint");
+    ).to.be.revertedWith("ERC721Base: Minter required");
   });
 });
