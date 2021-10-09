@@ -3,7 +3,13 @@ node_modules
 
 # Hardhat files
 cache
-artifacts
+# Keep artifacts for use with client app
+artifacts/
+!artifacts/contracts
+!artifacts/contracts/
+!artifacts/contracts/*
+!artifacts/contracts/**/*
+abi
 
 # IDE files
 .idea

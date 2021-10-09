@@ -3,72 +3,108 @@ pragma solidity 0.8.4;
 
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/math/SafeCast.sol";
+
 import "./DAvatar.sol";
 
 contract Minter is Ownable {
-    uint public fee = 0.01 ether;
-    DAvatar dAvatar;
+  DAvatar internal dAvatar;
+  AggregatorV3Interface internal priceFeed;
 
-    event PaymentReceived(address indexed from, uint amount, uint indexed forTokenId);
-    event Withdraw(address indexed to, uint amount);
+  uint256 public usdFee = 90000000;
 
-    constructor(DAvatar _dAvatar) {
-        dAvatar = _dAvatar;
-    }
+  event PaymentReceived(
+    address indexed from,
+    uint256 amount,
+    uint256 indexed forTokenId
+  );
+  event Withdraw(address indexed to, uint256 amount);
 
-    /**
-     * @dev Sets new dAvatar fee.
-     *
-     * Requirements:
-     *
-     * - the caller must be owner
-     */
-    function setNewFee(uint _newFee) public onlyOwner {
-        fee = _newFee;
-    }
+  constructor(DAvatar _dAvatar) {
+    dAvatar = _dAvatar;
 
-    /**
-     * @dev Should initiate mint function from dAvatar contract
-     *
-     * Requirements:
-     *
-     * - caller must pay minting fee defined is storage variable `fee`
-     */
-    function initiateMinting(string memory metadataCid) public payable returns(uint) {
-        require(msg.value == fee, "Minter: please send exact fee amount");
+    // ETH/USD
+    priceFeed = AggregatorV3Interface(
+      0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419
+    );
+  }
 
-        uint tokenId = dAvatar.mint(msg.sender, metadataCid);
-        emit PaymentReceived(msg.sender, msg.value, tokenId);
+  /**
+   * @dev Sets new dAvatar fee.
+   *
+   * Requirements:
+   *
+   * - the caller must be owner
+   */
+  function setNewFee(uint256 _newFee) public onlyOwner {
+    usdFee = _newFee;
+  }
 
-        return tokenId;
-    }
+  function getPrice() public view returns (uint256) {
+    (, int256 price, , , ) = priceFeed.latestRoundData();
 
-    /**
-     * @dev Will withdraw the entire contract balance to
-     * the specified receiver passed as an argument `to`.
-     *
-     * Requirements:
-     *
-     * - the caller must be owner
-     */
-    function withdraw(address payable _to) public onlyOwner {
-        uint amount = address(this).balance;
-        _to.transfer(amount);
-        emit Withdraw(_to, amount);
-    }
+    return SafeCast.toUint256(price);
+  }
 
-    /**
-     * @dev Will withdraw specified amount from contract balance
-     * to the specified receiver passed as an argument `to`.
-     *
-     * Requirements:
-     *
-     * - the caller must be owner
-     */
-    function withdraw(address payable _to, uint _amount) public onlyOwner {
-        require(_amount <= address(this).balance, "Minter: There are not enough funds stored in the smart contract");
+  /**
+   * @dev Should initiate mint function from dAvatar contract
+   *
+   * Requirements:
+   *
+   * - caller must pay minting fee defined is storage variable `fee`
+   */
+  function initiateMinting(string memory _metadataCid)
+    public
+    payable
+    returns (uint256)
+  {
+    uint256 ethPrice = getPrice();
+    // TODO: Check if this will fail for big values
+    uint256 usdInput = msg.value * ethPrice / 1e18;
 
-        _to.transfer(_amount);
-        emit Withdraw(_to, _amount);
-    }
+    require(usdInput > usdFee, "Minter: Fee Required");
+
+    // uint price = 9;
+    // uint256 usdInput = 50000;
+    // uint ethPrice = 3500;
+    // uint toPayInEth = 1e18 * usdInput / ethPrice;
+    // uint toRecive = (usdInput * 100)/ price;
+
+    uint256 tokenId = dAvatar.mint(msg.sender, _metadataCid);
+    emit PaymentReceived(msg.sender, msg.value, tokenId);
+
+    return tokenId;
+  }
+
+  /**
+   * @dev Will withdraw the entire contract balance to
+   * the specified receiver passed as an argument `to`.
+   *
+   * Requirements:
+   *
+   * - the caller must be owner
+   */
+  function withdraw(address payable _to) public onlyOwner {
+    uint256 amount = address(this).balance;
+    _to.transfer(amount);
+    emit Withdraw(_to, amount);
+  }
+
+  /**
+   * @dev Will withdraw specified amount from contract balance
+   * to the specified receiver passed as an argument `to`.
+   *
+   * Requirements:
+   *
+   * - the caller must be owner
+   */
+  function withdraw(address payable _to, uint256 _amount) public onlyOwner {
+    require(
+      _amount <= address(this).balance,
+      "Minter: There are not enough funds stored in the smart contract"
+    );
+
+    _to.transfer(_amount);
+    emit Withdraw(_to, _amount);
+  }
 }

@@ -1,3 +1,5 @@
+const { task } = require("hardhat/config");
+
 require("dotenv").config();
 
 require("@nomiclabs/hardhat-etherscan");
@@ -5,6 +7,7 @@ require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-waffle");
 require("hardhat-gas-reporter");
 require("solidity-coverage");
+require("hardhat-abi-exporter");
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -24,10 +27,14 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
  */
 module.exports = {
   solidity: "0.8.4",
+  paths: { artifacts: "./client/artifacts" },
   networks: {
     hardhat: {
       accounts: {
         mnemonic: process.env.DEV_MNEMONIC,
+      },
+      forking: {
+        url: process.env.ALCHEMY_MAINNET_RPC_URL,
       },
       initialBaseFeePerGas: 0, // workaround from https://github.com/sc-forks/solidity-coverage/issues/652#issuecomment-896330136 . Remove when that issue is closed.
     },

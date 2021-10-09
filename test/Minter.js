@@ -5,6 +5,11 @@ describe("Minter", function () {
   let Minter;
   let minter;
 
+  const getPrice = async () => {
+    const price = await minter.getPrice();
+    return Number(price.toString()) / 100000000;
+  };
+
   // Current order of it assumptions matters, don't change it
   // without changing this before hook to before each.
   // This would require slight changes in it blocks too.
@@ -19,20 +24,20 @@ describe("Minter", function () {
   });
 
   it("Should return the correct fee", async function () {
-    const expectedFee = ethers.utils.parseEther("0.01");
+    const expectedFee = 90000000;
 
-    const fee = await minter.fee();
+    const fee = await minter.usdFee();
 
     expect(fee).to.equal(expectedFee);
   });
 
   it("Should set new fee price", async function () {
-    const newFee = ethers.utils.parseEther("2");
-    const oldFee = await minter.fee();
+    const newFee = 99000000;
+    const oldFee = await minter.usdFee();
 
     await minter.setNewFee(newFee);
 
-    const fee = await minter.fee();
+    const fee = await minter.usdFee();
 
     expect(fee).to.not.equal(oldFee);
     expect(fee).to.equal(newFee);
@@ -41,7 +46,12 @@ describe("Minter", function () {
   it("Should call initiate minting", async function () {
     const accounts = await ethers.getSigners();
     const metadataCid = "test.json";
-    const fee = await minter.fee();
+    const usdPrice = await getPrice();
+    const fee = ethers.utils.parseEther(
+      (1 / usdPrice).toString().substr(0, 20)
+    );
+    console.log(fee.toString());
+    console.log((0.1 / usdPrice).toString().substr(0, 19));
 
     await minter
       .connect(accounts[1])
@@ -49,9 +59,12 @@ describe("Minter", function () {
     expect(await ethers.provider.getBalance(minter.address)).to.equal(fee);
   });
 
-  it("Should emmit PaymentReceived event on initiateMinting", async function () {
+  it("Should emit PaymentReceived event on initiateMinting", async function () {
     const [owner] = await ethers.getSigners();
-    const fee = await minter.fee();
+    const usdPrice = await getPrice();
+    const fee = ethers.utils.parseEther(
+      (1 / usdPrice).toString().substr(0, 20)
+    );
 
     await expect(minter.initiateMinting("metadataCid.json", { value: fee }))
       .to.emit(minter, "PaymentReceived")
@@ -82,7 +95,7 @@ describe("Minter", function () {
 
   it("Should withdraw specified amount", async function () {
     const accounts = await ethers.getSigners();
-    const fee = await minter.fee();
+    const fee = await minter.usdFee();
 
     await minter.initiateMinting("metadata.json", {
       value: fee,
@@ -103,7 +116,7 @@ describe("Minter", function () {
 
   it("Should emmit Withdraw event on withdraw", async function () {
     const [owner] = await ethers.getSigners();
-    const fee = await minter.fee();
+    const fee = await minter.usdFee();
 
     await minter.initiateMinting("metadata.json", {
       value: fee,
